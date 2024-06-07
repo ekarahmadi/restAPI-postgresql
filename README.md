@@ -1,3 +1,4 @@
+<img src="ERD Diagram GRB.png" alt="Diagram" />
 
 ### Penjelasan Struktur File, Dependencies dan Endpoints
 
