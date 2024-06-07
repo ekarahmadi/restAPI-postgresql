@@ -1,0 +1,6 @@
+node.js
+@prisma/client
+cors
+dotenv
+express
+prisma

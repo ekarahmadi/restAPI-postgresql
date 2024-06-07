@@ -1,0 +1,206 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model author {
+  author_id                   Int           @id(map: "author_id") @default(autoincrement())
+  author_name                 String?       @db.VarChar
+  year_born                   Int?
+  year_died                   Int?
+  last_update                 DateTime?     @default(now()) @db.Timestamptz(6)
+  year_author_year_bornToyear year?         @relation("author_year_bornToyear", fields: [year_born], references: [year_id], onDelete: NoAction, onUpdate: NoAction, map: "Author_year_born_fkey")
+  year_author_year_diedToyear year?         @relation("author_year_diedToyear", fields: [year_died], references: [year_id], onDelete: NoAction, onUpdate: NoAction, map: "Author_year_died_fkey")
+  book_author                 book_author[]
+}
+
+model book {
+  book_id          Int              @id @default(autoincrement())
+  book_name        String?          @db.VarChar
+  pages            Int?
+  publication_year Int?
+  publisher_id     Int?
+  language_id      Int?
+  last_update      DateTime?        @default(now()) @db.Timestamptz(6)
+  language         language?        @relation(fields: [language_id], references: [language_id], onDelete: NoAction, onUpdate: NoAction, map: "language_id")
+  year             year?            @relation(fields: [publication_year], references: [year_id], onDelete: NoAction, onUpdate: NoAction, map: "publication_year")
+  publisher        publisher?       @relation(fields: [publisher_id], references: [publisher_id], onDelete: NoAction, onUpdate: NoAction, map: "publisher_id")
+  book_author      book_author[]
+  book_category    book_category[]
+  book_promotion   book_promotion[]
+  inventory        inventory[]
+  review           review[]
+  wishlist         wishlist[]
+}
+
+model book_author {
+  book_id     Int
+  author_id   Int
+  last_update DateTime? @default(now()) @db.Timestamptz(6)
+  author      author?   @relation(fields: [author_id], references: [author_id], onDelete: NoAction, onUpdate: NoAction)
+  book        book?     @relation(fields: [book_id], references: [book_id], onDelete: NoAction, onUpdate: NoAction)
+  
+  @@id([book_id, author_id])
+}
+
+model book_category {
+  category_id Int
+  book_id     Int
+  last_update DateTime? @default(now()) @db.Timestamptz(6)
+  book        book?     @relation(fields: [book_id], references: [book_id], onDelete: NoAction, onUpdate: NoAction)
+  category    category? @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction)
+  
+  @@id([category_id, book_id])
+}
+
+model book_promotion {
+  promotion_id Int
+  book_id      Int
+  store_id     Int
+  last_update  DateTime?  @default(now()) @db.Timestamptz(6)
+  book         book?      @relation(fields: [book_id], references: [book_id], onDelete: NoAction, onUpdate: NoAction)
+  promotion    promotion? @relation(fields: [promotion_id], references: [promotion_id], onDelete: NoAction, onUpdate: NoAction)
+  store        store?     @relation(fields: [store_id], references: [store_id], onDelete: NoAction, onUpdate: NoAction)
+  
+  @@id([promotion_id, book_id, store_id])
+}
+
+model category {
+  category_id   Int             @id @default(autoincrement())
+  category      String?         @db.VarChar
+  last_update   DateTime?       @default(now()) @db.Timestamptz(6)
+  book_category book_category[]
+}
+
+model city {
+  city_id     Int         @id @default(autoincrement())
+  city        String?     @db.VarChar
+  last_update DateTime?   @default(now()) @db.Timestamptz(6)
+  publisher   publisher[]
+  staff       staff[]
+}
+
+model customer {
+  customer_id    Int        @id @default(autoincrement())
+  customer_name  String?    @db.VarChar
+  customer_email String?    @db.VarChar
+  city_id        Int?
+  store_id       Int?
+  last_update    DateTime?  @default(now()) @db.Timestamp(6)
+  review         review[]
+  wishlist       wishlist[]
+}
+
+model inventory {
+  inventory_id Int       @id @default(autoincrement())
+  store_id     Int?
+  book_id      Int?
+  quantity     Int?
+  last_update  DateTime? @default(now()) @db.Timestamptz(6)
+  book         book?     @relation(fields: [book_id], references: [book_id], onDelete: NoAction, onUpdate: NoAction)
+  store        store?    @relation(fields: [store_id], references: [store_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model language {
+  language_id Int       @id @default(autoincrement())
+  language    String?   @db.VarChar
+  last_update DateTime? @default(now()) @db.Timestamptz(6)
+  book        book[]
+}
+
+model position {
+  position_id Int       @id @default(autoincrement())
+  position    String?   @db.VarChar
+  last_update DateTime? @default(now()) @db.Timestamptz(6)
+  staff       staff[]
+}
+
+model promotion {
+  promotion_id   Int              @id @default(autoincrement())
+  promotion_name String?          @db.VarChar
+  start_date     DateTime?        @db.Date
+  end_date       DateTime?        @db.Date
+  description    String?          @db.VarChar
+  discount       Float?
+  last_update    DateTime?        @default(now()) @db.Timestamptz(6)
+  book_promotion book_promotion[]
+}
+
+model publisher {
+  publisher_id   Int       @id @default(autoincrement())
+  publisher_name String?   @db.VarChar(255)
+  city_id        Int?
+  telephone      Int?
+  year_founded   Int?
+  last_update    DateTime? @default(now()) @db.Timestamptz(6)
+  book           book[]
+  city           city?     @relation(fields: [city_id], references: [city_id], onDelete: NoAction, onUpdate: NoAction)
+  year           year?     @relation(fields: [year_founded], references: [year_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model review {
+  review_id   Int       @id @default(autoincrement())
+  customer_id Int?
+  book_id     Int?
+  rating      Float?
+  comment     String?   @db.VarChar
+  review_date DateTime? @db.Date
+  last_update DateTime? @default(now()) @db.Timestamptz(6)
+  book        book?     @relation(fields: [book_id], references: [book_id], onDelete: NoAction, onUpdate: NoAction)
+  customer    customer? @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model salary {
+  salary_id    Int       @id @default(autoincrement())
+  salary_grade Int?
+  last_update  DateTime? @default(now()) @db.Timestamptz(6)
+  staff        staff[]
+}
+
+model staff {
+  staff_id    Int       @id @default(autoincrement())
+  staff_name  String?   @db.VarChar
+  staff_email String?   @db.VarChar
+  position_id Int?
+  salary_id   Int?
+  city_id     Int?
+  store_id    Int?
+  last_update DateTime? @default(now()) @db.Timestamptz(6)
+  city        city?     @relation(fields: [city_id], references: [city_id], onDelete: NoAction, onUpdate: NoAction)
+  position    position? @relation(fields: [position_id], references: [position_id], onDelete: NoAction, onUpdate: NoAction)
+  salary      salary?   @relation(fields: [salary_id], references: [salary_id], onDelete: NoAction, onUpdate: NoAction)
+  store       store?    @relation(fields: [store_id], references: [store_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model store {
+  store_id       Int              @id @default(autoincrement())
+  store_name     String?          @db.VarChar
+  city_id        Int?
+  last_update    DateTime?        @default(now()) @db.Timestamptz(6)
+  book_promotion book_promotion[]
+  inventory      inventory[]
+  staff          staff[]
+}
+
+model wishlist {
+  customer_id Int
+  book_id     Int
+  last_update DateTime? @default(now()) @db.Timestamptz(6)
+  book        book?     @relation(fields: [book_id], references: [book_id], onDelete: NoAction, onUpdate: NoAction)
+  customer    customer? @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction)
+  @@id([customer_id, book_id])
+}
+
+model year {
+  year_id                       Int         @id @default(autoincrement())
+  year                          Int?
+  last_update                   DateTime?   @default(now()) @db.Timestamptz(6)
+  author_author_year_bornToyear author[]    @relation("author_year_bornToyear")
+  author_author_year_diedToyear author[]    @relation("author_year_diedToyear")
+  book                          book[]
+  publisher                     publisher[]
+}

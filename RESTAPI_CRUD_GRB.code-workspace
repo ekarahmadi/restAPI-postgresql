@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../RESTAPI_CRUD_GRB_WITHOUT_ORM"
+		}
+	],
+	"settings": {}
+}
