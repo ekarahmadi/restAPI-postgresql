@@ -1,6 +1,9 @@
+### Download Full-Project (karena ada beberapa file tidak bisa teruploud) : https://drive.google.com/file/d/1CwRmYzWPNluB80QNG4SpyQskSl2EMQj_/view?usp=sharing
+###
+### ER Diagram Database
 <img src="ERD Diagram GRB.png" alt="Diagram" />
 
-### Penjelasan Struktur File, Dependencies dan Endpoints
+ Penjelasan Struktur File, Dependencies dan Endpoints
 
 #### **Dependencies yang Digunakan**
 
